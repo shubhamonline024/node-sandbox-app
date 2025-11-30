@@ -39,15 +39,22 @@ const output = (req, res) => {
 const page = `<!DOCTYPE html>
 <html>
 <head>
-  <title>API Request Essentials</title>
+  <title>API Request Essentials & REST API Rules</title>
+
+  <!-- Highlight.js stylesheet -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
     h1 { color: #333; }
+    h2 { margin-top: 40px; color: #444; }
     ul { margin-top: 20px; }
     li { margin-bottom: 8px; }
+    pre { padding: 16px; background: #1e1e1e; border-radius: 6px; }
   </style>
 </head>
 <body>
+
   <h1>Important Points for an API Request</h1>
   <ul>
     <li><strong>Endpoint (URL):</strong> The address where the request is sent.</li>
@@ -66,8 +73,52 @@ const page = `<!DOCTYPE html>
     <li><strong>Caching:</strong> Store responses to improve performance.</li>
     <li><strong>CORS:</strong> Controls cross-domain API permissions.</li>
   </ul>
+
+  <h2>REST API Rules & Best Practices</h2>
+  <ul>
+    <li><strong>Use Nouns, Not Verbs:</strong> Resource names should be nouns (e.g., <code>/users</code>).</li>
+    <li><strong>Use Plural Resource Names:</strong> e.g., <code>/products</code>, <code>/orders</code>.</li>
+    <li><strong>Use HTTP Methods for Actions:</strong> GET = read, POST = create, PUT = update, DELETE = remove.</li>
+    <li><strong>Use Resource Nesting When Necessary:</strong> e.g., <code>/users/123/orders</code>.</li>
+    <li><strong>Filter, Sort, and Paginate with Query Params:</strong> e.g., <code>?limit=10&sort=date</code>.</li>
+    <li><strong>Use Consistent Naming Conventions:</strong> Use lowercase and hyphens.</li>
+    <li><strong>Stateless Requests:</strong> No client state stored on server.</li>
+    <li><strong>Return Proper HTTP Status Codes:</strong> 200, 201, 400, 404, etc.</li>
+    <li><strong>Use JSON as the Standard Response Format:</strong> Predictable and readable structure.</li>
+    <li><strong>Version Your API:</strong> e.g., <code>/api/v1/users</code>.</li>
+    <li><strong>Meaningful Error Messages:</strong> Include <code>message</code> and <code>details</code>.</li>
+    <li><strong>Ensure Security:</strong> HTTPS, validation, no sensitive data leakage.</li>
+    <li><strong>Idempotency:</strong> PUT/DELETE should produce same results on repeats.</li>
+    <li><strong>Use ETags or Cache-Control:</strong> Improve performance.</li>
+    <li><strong>Rate Limit Responses:</strong> Use headers like <code>X-Rate-Limit</code>.</li>
+    <li><strong>Return Minimal Required Data:</strong> Use field selection.</li>
+    <li><strong>Avoid Large Nested Objects:</strong> Use links instead.</li>
+  </ul>
+
+  <h2>Example REST API Request</h2>
+
+  <pre><code class="json">
+{
+  "method": "POST",
+  "endpoint": "/api/v1/users",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer token123"
+  },
+  "body": {
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+}
+  </code></pre>
+
+  <!-- Highlight.js script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
 </body>
 </html>
+
 `;
 
 app.get("/", (req, res) => {
