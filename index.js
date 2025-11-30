@@ -71,23 +71,23 @@ app.get("/", (req, res) => {
 });
 
 app.get("/get", (req, res) => {
-  res.json(output(req));
+  res.json(output(req, res));
 });
 
 app.post("/post", (req, res) => {
-  res.json(output(req));
+  res.json(output(req, res));
 });
 
 app.put("/put", (req, res) => {
-  res.json(output(req));
+  res.json(output(req, res));
 });
 
 app.patch("/patch", (req, res) => {
-  res.json(output(req));
+  res.json(output(req, res));
 });
 
 app.delete("/delete", (req, res) => {
-  res.json(output(req));
+  res.json(output(req, res));
 });
 
 app.listen(PORT, () => {
