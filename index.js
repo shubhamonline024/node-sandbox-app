@@ -29,6 +29,7 @@ const output = (req, res) => {
     "Caching – req.headers['cache-control']":
       req.headers["cache-control"] || null,
     "CORS – req.headers['origin']": req.headers["origin"] || null,
+    "Req Body = req.body": req.body || null,
   };
 };
 
@@ -75,6 +76,10 @@ app.get("/get", (req, res) => {
 });
 
 app.post("/post", (req, res) => {
+  res.json(output(req, res));
+});
+
+app.post("/post/:id", (req, res) => {
   res.json(output(req, res));
 });
 
