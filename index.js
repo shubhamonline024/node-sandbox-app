@@ -157,33 +157,37 @@ app.delete("/delete", (req, res) => {
 app.get("/legend", (req, res) => {
   const routes = [];
 
-  // Extract routes dynamically
   app._router.stack.forEach((layer) => {
-    if (layer.route) {
-      const path = layer.route.path;
-      const methods = Object.keys(layer.route.methods).map((m) =>
-        m.toUpperCase()
-      );
-
-      routes.push({ path, methods });
+    // --- 1. DIRECT ROUTES (GET, POST, etc.) ---
+    if (layer.route && layer.route.path) {
+      routes.push({
+        path: layer.route.path,
+        methods: Object.keys(layer.route.methods).map((m) => m.toUpperCase()),
+      });
+      return;
     }
 
-    if (layer.name === "router" && layer.handle.stack) {
-      layer.handle.stack.forEach((handler) => {
-        if (handler.route) {
-          const path = handler.route.path;
-          const methods = Object.keys(handler.route.methods).map((m) =>
-            m.toUpperCase()
-          );
-
-          routes.push({ path, methods });
+    // --- 2. NESTED ROUTERS (If .handle.stack exists) ---
+    if (
+      layer.name === "router" &&
+      layer.handle &&
+      Array.isArray(layer.handle.stack)
+    ) {
+      layer.handle.stack.forEach((nested) => {
+        if (nested.route && nested.route.path) {
+          routes.push({
+            path: nested.route.path,
+            methods: Object.keys(nested.route.methods).map((m) =>
+              m.toUpperCase()
+            ),
+          });
         }
       });
     }
   });
 
   // Build HTML
-  let tableRows = routes
+  const rows = routes
     .map(
       (r) => `
       <tr>
@@ -199,50 +203,17 @@ app.get("/legend", (req, res) => {
   <head>
     <title>API Route Legend</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 40px;
-        background: #f6f7f9;
-      }
-      h1 {
-        color: #333;
-        margin-bottom: 20px;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      }
-      th, td {
-        padding: 14px;
-        border-bottom: 1px solid #ddd;
-        text-align: left;
-      }
-      th {
-        background: #333;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-      tr:hover {
-        background: #f0f0f0;
-      }
+      body { font-family: Arial; padding: 40px; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 10px; border-bottom: 1px solid #ccc; }
+      th { background: #333; color: #fff; }
     </style>
   </head>
   <body>
-    <h1>API Route Legend</h1>
-    <p>This table lists all routes registered in this Express application.</p>
-    
+    <h1>API Routes</h1>
     <table>
-      <tr>
-        <th>Route</th>
-        <th>Methods</th>
-      </tr>
-      ${tableRows}
+      <tr><th>Path</th><th>Methods</th></tr>
+      ${rows}
     </table>
   </body>
   </html>
