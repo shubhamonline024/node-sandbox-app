@@ -3,20 +3,32 @@ const express = require("express");
 const app = express();
 const PORT = 80;
 
-const output = (req) => {
+const output = (req, res) => {
   return {
-    "1] req.url": req.url,
-    "2] req.path": req.path,
-    "3] req.route": req.route,
-    "4] req.params": req.params,
-    "5] req.query": req.query,
-    "6] req.body": req.body,
-    "7] req.headers": req.headers,
-    "8] req.method": req.method,
-    "9] req.ip": req.ip,
-    "10] req.ips": req.ips,
-    "11] req.protocol": req.protocol,
-    "12] req.hostname": req.hostname,
+    // Direct request-based values
+    "Endpoint (URL) – req.url": req.url,
+    "HTTP Method – req.method": req.method,
+    "Headers – req.headers": req.headers,
+    "Query Parameters – req.query": req.query,
+    "Route Parameters – req.params": req.params,
+    "Request Body – req.body": req.body,
+    "Authentication – req.headers['authorization']":
+      req.headers["authorization"] || null,
+    "Content-Type – req.headers['content-type']":
+      req.headers["content-type"] || null,
+
+    // Response-based (not from req, but included for completeness)
+    "Status Code – res.statusCode": res.statusCode,
+    "Response Body – (set by server)":
+      "N/A (response body is what you're viewing right now)",
+
+    // Server/runtime related values
+    "Timeouts – req.socket.timeout": req.socket?.timeout || null,
+    "Error Handling – (server controlled)": "Handled by Express middleware",
+    "Rate Limiting – (not enabled)": "No rate limiting configured",
+    "Caching – req.headers['cache-control']":
+      req.headers["cache-control"] || null,
+    "CORS – req.headers['origin']": req.headers["origin"] || null,
   };
 };
 
