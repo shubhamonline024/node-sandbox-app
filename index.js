@@ -54,7 +54,7 @@ const page = `<!DOCTYPE html>
   </style>
 </head>
 <body>
-
+  <h6> All check /legend route</h6>
   <h1>Important Points for an API Request</h1>
   <ul>
     <li><strong>Endpoint (URL):</strong> The address where the request is sent.</li>
@@ -147,6 +147,106 @@ app.patch("/patch", (req, res) => {
 
 app.delete("/delete", (req, res) => {
   res.json(output(req, res));
+});
+
+// --------------------------------------
+// 🔥 DYNAMIC HTML LEGEND ROUTE
+// --------------------------------------
+app.get("/legend", (req, res) => {
+  const routes = [];
+
+  // Extract routes dynamically
+  app._router.stack.forEach((layer) => {
+    if (layer.route) {
+      const path = layer.route.path;
+      const methods = Object.keys(layer.route.methods).map((m) =>
+        m.toUpperCase()
+      );
+
+      routes.push({ path, methods });
+    }
+
+    if (layer.name === "router" && layer.handle.stack) {
+      layer.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          const path = handler.route.path;
+          const methods = Object.keys(handler.route.methods).map((m) =>
+            m.toUpperCase()
+          );
+
+          routes.push({ path, methods });
+        }
+      });
+    }
+  });
+
+  // Build HTML
+  let tableRows = routes
+    .map(
+      (r) => `
+      <tr>
+        <td>${r.path}</td>
+        <td>${r.methods.join(", ")}</td>
+      </tr>`
+    )
+    .join("");
+
+  const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>API Route Legend</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f6f7f9;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      }
+      th, td {
+        padding: 14px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background: #333;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      tr:hover {
+        background: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>API Route Legend</h1>
+    <p>This table lists all routes registered in this Express application.</p>
+    
+    <table>
+      <tr>
+        <th>Route</th>
+        <th>Methods</th>
+      </tr>
+      ${tableRows}
+    </table>
+  </body>
+  </html>
+  `;
+
+  res.send(html);
 });
 
 app.listen(PORT, () => {
