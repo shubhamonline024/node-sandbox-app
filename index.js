@@ -1,4 +1,6 @@
 const express = require("express");
+const fs = require("fs");
+const path = require("path");
 
 const PORT = 80;
 
@@ -247,6 +249,70 @@ app.get("/legend", (req, res) => {
   `;
 
   res.send(html);
+});
+
+app.get("/code", (req, res) => {
+  const filePath = path.join(__dirname, "server.js"); // change name if needed
+
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).send("Unable to load source code.");
+    }
+
+    // Escape HTML so code displays safely
+    const safeCode = data
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Source Code Viewer</title>
+
+      <!-- Highlight.js stylesheet -->
+      <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+      <style>
+        body {
+          background: #1e1e1e;
+          color: white;
+          font-family: Arial, sans-serif;
+          padding: 30px;
+        }
+        h1 {
+          margin-bottom: 20px;
+          font-size: 28px;
+        }
+        pre {
+          padding: 20px;
+          border-radius: 8px;
+          background: #1e1e1e;
+          overflow-x: auto;
+        }
+        a {
+          color: #4ea1ff;
+        }
+      </style>
+    </head>
+
+    <body>
+      <h1>Server Source Code</h1>
+      <p><a href="/">Back to homepage</a></p>
+
+      <pre><code class="javascript">${safeCode}</code></pre>
+
+      <!-- Highlight.js script -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script>
+
+    </body>
+    </html>`;
+
+    res.send(html);
+  });
 });
 
 app.listen(PORT, () => {
